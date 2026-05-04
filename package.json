@@ -1,0 +1,28 @@
+{
+  "name": "learningplaywrightfundamental",
+  "version": "1.0.0",
+  "description": "",
+  "type": "module",
+  "main": "index.js",
+  "scripts": {
+    "test": "playwright test",
+    "ts-node": "ts-node",
+    "start": "node server.js",
+    "allure:generate": "allure generate allure-results --clean -o allure-report",
+    "allure:open": "allure open allure-report",
+    "allure:report": "allure generate allure-results --clean -o allure-report && allure open allure-report"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "devDependencies": {
+    "@playwright/test": "^1.59.1",
+    "@types/node": "^25.6.0",
+    "allure-playwright": "^3.7.1",
+    "ts-node": "^10.9.2",
+    "typescript": "^6.0.3"
+  },
+  "dependencies": {
+    "allure-commandline": "^2.38.1"
+  }
+}
