@@ -103,7 +103,7 @@ class CustomTTAReporter {
             fullTitle: [...describePath, test.title].join(' › '),
             file: test.location.file,
             describePath: describePath,
-            location: `${test.location.file}:${test.location.line}`,
+            location: `${test.location.file.split(/[\\/]/).pop()}:${test.location.line}`,
             duration: 0,
             status: 'passed',
             retry: 0,
@@ -346,7 +346,15 @@ class CustomTTAReporter {
         console.log(`✅ Report generated: ${this.outputFile}`);
     }
     formatTime(date) {
-        return date.toLocaleString('en-US', { month: 'short', day: '2-digit', year: 'numeric', hour: '2-digit', minute: '2-digit', second: '2-digit', hour12: false });
+        return date.toLocaleString('en-GB', {
+            day: '2-digit',
+            month: 'short',
+            year: 'numeric',
+            hour: '2-digit',
+            minute: '2-digit',
+            second: '2-digit',
+            hour12: false,
+        }).replace(',', ''); // "04 May 2026 05:40:46"
     }
     formatDuration(ms) {
         const seconds = Math.floor(ms / 1000);
@@ -579,7 +587,7 @@ class CustomTTAReporter {
                     <td class="col-author">${author}</td>
                     <td class="col-group">${this.escapeHtml(testGroup)}</td>
                     <td class="col-tags">${test.tags.map(t => `<span class="tag">${t}</span>`).join(' ')}</td>
-                    <td class="col-file">${this.escapeHtml(test.location)}</td>
+                    <td class="col-file" title="${this.escapeHtml(test.location)}">${this.escapeHtml(test.location.split(/[\\/]/).pop() ?? test.location)}</td>
                     <td class="col-starttime">${this.formatTime(testStartTime)}</td>
                     <td class="col-endtime">${this.formatTime(testEndTime)}</td>
                     <td class="col-duration">${duration}</td>
@@ -715,23 +723,23 @@ class CustomTTAReporter {
         .filter-group label{display:inline-flex;align-items:center;gap:6px;padding:8px 16px;background:var(--gray-50);border:1px solid var(--gray-200);border-radius:20px;cursor:pointer;font-size:13px;font-weight:500;transition:all .2s}
         .filter-group label:hover{background:var(--primary-bg);border-color:var(--primary-light)}
         .filter-group input[type="checkbox"]{accent-color:var(--primary);width:16px;height:16px}
-        .test-table-container{background:white;border-radius:var(--radius);box-shadow:var(--shadow-lg);overflow:hidden}
-        .test-table{width:100%;border-collapse:separate;border-spacing:0;font-size:13px}
+        .test-table-container{background:white;border-radius:var(--radius);box-shadow:var(--shadow-lg);overflow-x:auto}
+        .test-table{width:100%;border-collapse:separate;border-spacing:0;font-size:13px;table-layout:fixed}
         .test-table thead{background:linear-gradient(135deg,var(--dark) 0%,var(--gray-700) 100%);color:white;position:sticky;top:0;z-index:10}
-        .test-table th{padding:16px 12px;text-align:left;font-weight:600;font-size:11px;text-transform:uppercase;letter-spacing:.5px;white-space:nowrap}
-        .test-table td{padding:14px 12px;border-bottom:1px solid var(--gray-100);vertical-align:middle}
+        .test-table th{padding:16px 12px;text-align:left;font-weight:600;font-size:11px;text-transform:uppercase;letter-spacing:.5px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+        .test-table td{padding:14px 12px;border-bottom:1px solid var(--gray-100);vertical-align:middle;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
         .test-table tbody tr{background:white;transition:all .2s}
         .test-table tbody tr:nth-child(even){background:var(--gray-50)}
         .test-row:hover{background:var(--primary-bg)!important}
         .test-row.failed{background:#fef2f2!important;border-left:3px solid var(--danger)}
         .test-row.passed{border-left:3px solid transparent}
         .col-sno{width:50px;text-align:center;font-weight:600;color:var(--gray-400)}
-        .col-suite{min-width:120px}.col-testname{min-width:280px}.col-author{width:80px}.col-group{width:80px}
-        .col-tags{min-width:120px}.col-file{min-width:140px;font-family:monospace;font-size:11px;color:var(--gray-500)}
-        .col-starttime,.col-endtime{width:160px;font-size:12px;color:var(--gray-500)}
-        .col-duration{width:80px;text-align:center;font-weight:600}.col-status{width:100px;text-align:center}
+        .col-suite{width:90px}.col-testname{width:200px}.col-author{width:70px}.col-group{width:70px}
+        .col-tags{width:80px}.col-file{width:160px;font-family:monospace;font-size:11px;color:var(--gray-500)}
+        .col-starttime,.col-endtime{width:130px;font-size:11px;color:var(--gray-500);white-space:nowrap}
+        .col-duration{width:70px;text-align:center;font-weight:600}.col-status{width:90px;text-align:center}
         .col-screenshot,.col-video,.col-trace{width:80px;text-align:center}
-        .test-name-link{color:var(--dark);cursor:pointer;font-weight:500;transition:color .2s}
+        .test-name-link{color:var(--dark);cursor:pointer;font-weight:500;transition:color .2s;white-space:normal;word-break:break-word}
         .test-name-link:hover{color:var(--primary)}
         .status-badge{display:inline-flex;align-items:center;justify-content:center;padding:6px 14px;border-radius:20px;font-weight:600;font-size:11px;text-transform:uppercase;letter-spacing:.5px}
         .status-badge.passed{background:linear-gradient(135deg,#22c55e 0%,#16a34a 100%);color:white;box-shadow:0 2px 8px rgba(34,197,94,.3)}
