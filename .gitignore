@@ -6,3 +6,6 @@ node_modules/
 /blob-report/
 /playwright/.cache/
 /playwright/.auth/
+
+# TTA Reporter compiled output (auto-generated from reporters/CustomTTAReporter.ts)
+/reporters-dist/

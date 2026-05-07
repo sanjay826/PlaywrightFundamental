@@ -1,0 +1,3 @@
+All Navigation Command Printed : [
+  "Navigation commands — go forward, back, refresh, and load a URL.driver.navigate().to('https://thetestingacademy.com'); driver.navigate().refresh();"
+]

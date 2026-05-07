@@ -1,0 +1,274 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>TTA Automation Report</title>
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    :root {
+      --green: #059669; --green-l: #10b981; --green-bg: #ecfdf5;
+      --red: #dc2626;   --red-bg: #fef2f2;
+      --gray: #64748b;  --dark: #1e293b;
+      --border: #e2e8f0; --bg: #f1f5f9;
+      --radius: 10px; --shadow: 0 2px 8px rgba(0,0,0,.08);
+    }
+    body { font-family: 'Inter', sans-serif; font-size: 14px; background: var(--bg); color: var(--dark); }
+
+    /* Header */
+    .header { background: linear-gradient(135deg, var(--green) 0%, #0d9488 100%);
+      color: #fff; text-align: center; padding: 36px 20px; }
+    .header h1 { font-size: 28px; font-weight: 700; }
+    .header p  { opacity: .85; margin-top: 6px; }
+
+    /* Container */
+    .container { max-width: 1400px; margin: 0 auto; padding: 24px 20px; }
+
+    /* Summary cards */
+    .cards { display: grid; grid-template-columns: repeat(auto-fit, minmax(140px,1fr)); gap: 16px; margin-bottom: 20px; }
+    .card { background: #fff; border-radius: var(--radius); padding: 20px 16px; text-align: center;
+      box-shadow: var(--shadow); border-left: 4px solid var(--green); }
+    .card b    { display: block; font-size: 32px; font-weight: 700; }
+    .card span { font-size: 11px; text-transform: uppercase; letter-spacing: .5px; color: var(--gray); margin-top: 6px; display: block; }
+    .card.pass { border-color: var(--green); } .card.pass b { color: var(--green); }
+    .card.fail { border-color: var(--red);   } .card.fail b { color: var(--red); }
+    .card.skip { border-color: #94a3b8; }
+    .card.rate { border-color: #6366f1; }      .card.rate b { color: #6366f1; }
+    .card.dur  { border-color: #f59e0b; }      .card.dur  b { color: #f59e0b; }
+
+    /* Env bar */
+    .env-bar { background: #fff; border-radius: var(--radius); padding: 14px 20px;
+      display: flex; flex-wrap: wrap; gap: 20px; align-items: center;
+      box-shadow: var(--shadow); margin-bottom: 16px; }
+    .env-bar label { font-size: 11px; text-transform: uppercase; color: var(--gray); font-weight: 600; margin-right: 6px; }
+    .env-bar em    { font-style: normal; font-weight: 600; }
+    .badge-env { background: var(--green); color: #fff; padding: 3px 10px; border-radius: 20px; font-size: 12px; }
+
+    /* Filters */
+    .filters { background: #fff; border-radius: var(--radius); padding: 14px 20px;
+      display: flex; gap: 16px; align-items: center; flex-wrap: wrap;
+      box-shadow: var(--shadow); margin-bottom: 16px; font-size: 13px; }
+    .filters label { display: flex; align-items: center; gap: 6px; cursor: pointer; }
+    .filters input { accent-color: var(--green); }
+
+    /* Table */
+    .table-wrap { background: #fff; border-radius: var(--radius); box-shadow: var(--shadow); overflow-x: auto; }
+    table { width: 100%; border-collapse: collapse; font-size: 13px; table-layout: fixed; }
+    thead { background: var(--dark); color: #fff; position: sticky; top: 0; z-index: 5; }
+    th { padding: 12px 10px; text-align: left; font-size: 11px; text-transform: uppercase;
+      letter-spacing: .4px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+    td { padding: 12px 10px; border-bottom: 1px solid var(--border);
+      overflow: hidden; text-overflow: ellipsis; white-space: nowrap; vertical-align: middle; }
+    tbody tr:hover { background: var(--green-bg); }
+    tr.fail td:first-child { border-left: 3px solid var(--red); }
+    tr.pass td:first-child { border-left: 3px solid var(--green); }
+
+    /* Column widths */
+    th:nth-child(1)  { width: 44px;  }   /* # */
+    th:nth-child(2)  { width: 90px;  }   /* Suite */
+    th:nth-child(3)  { width: 200px; }   /* Test Name */
+    th:nth-child(4)  { width: 70px;  }   /* Author */
+    th:nth-child(5)  { width: 80px;  }   /* Tags */
+    th:nth-child(6)  { width: 160px; }   /* File */
+    th:nth-child(7)  { width: 120px; }   /* Start */
+    th:nth-child(8)  { width: 120px; }   /* End */
+    th:nth-child(9)  { width: 70px;  }   /* Duration */
+    th:nth-child(10) { width: 80px;  }   /* Status */
+    th:nth-child(11) { width: 80px;  }   /* Screenshot */
+    th:nth-child(12) { width: 70px;  }   /* Video */
+    th:nth-child(13) { width: 70px;  }   /* Trace */
+
+    .test-name { cursor: pointer; font-weight: 500; white-space: normal; }
+    .test-name:hover { color: var(--green); }
+    .mono  { font-family: monospace; }
+    .small { font-size: 12px; color: var(--gray); white-space: nowrap; }
+    .center { text-align: center; }
+
+    /* Status badges */
+    .badge { display: inline-block; padding: 3px 10px; border-radius: 20px;
+      font-size: 11px; font-weight: 600; text-transform: uppercase; }
+    .badge.pass { background: #dcfce7; color: #15803d; }
+    .badge.fail { background: #fee2e2; color: #b91c1c; }
+    .badge.skip { background: #f1f5f9; color: #475569; }
+
+    /* Artifact links */
+    .art-link { display: inline-block; padding: 4px 8px; border-radius: 6px;
+      text-decoration: none; font-size: 11px; font-weight: 500; }
+    .ss-link  { background: var(--green-bg); color: var(--green); }
+    .vid-link { background: #fef3c7; color: #b45309; }
+    .trc-link { background: #ede9fe; color: #6d28d9; }
+
+    /* Tags */
+    .tag { display: inline-block; background: var(--green-bg); color: var(--green);
+      border: 1px solid var(--green-l); padding: 2px 7px; border-radius: 10px;
+      font-size: 10px; font-weight: 600; margin: 1px; }
+
+    /* Detail row */
+    .detail-row.hidden { display: none; }
+    .detail-box { padding: 16px 20px; background: #fafbff; border-top: 3px solid var(--green); }
+    .console-section { margin-bottom: 16px; }
+    .console-title { font-size: 12px; font-weight: 700; color: var(--dark); margin-bottom: 8px;
+      text-transform: uppercase; letter-spacing: .4px; }
+    .console-body { background: #0f172a; border-radius: 8px; padding: 14px 16px;
+      max-height: 280px; overflow-y: auto; font-family: monospace; font-size: 12px; line-height: 1.7; }
+    .console-line { color: #a7f3d0; border-bottom: 1px solid rgba(255,255,255,.04); padding: 1px 0; }
+    .console-line:last-child { border-bottom: none; }
+    .err-title  { font-weight: 700; color: var(--red); margin-bottom: 8px; margin-top: 12px; }
+    .err-msg    { font-family: monospace; font-size: 12px; color: var(--red);
+      white-space: pre-wrap; word-break: break-word; }
+    .stack      { font-family: monospace; font-size: 11px; background: var(--dark);
+      color: #a7f3d0; padding: 12px; border-radius: 6px; max-height: 200px;
+      overflow-y: auto; white-space: pre-wrap; margin-top: 8px; }
+    details summary { cursor: pointer; color: var(--gray); font-size: 12px; margin-top: 10px; }
+    .detail-video { max-width: 100%; max-height: 360px; border-radius: 8px; margin-top: 12px; }
+
+    /* Lightbox */
+    .lightbox { display: none; position: fixed; inset: 0; background: rgba(0,0,0,.9);
+      justify-content: center; align-items: center; z-index: 100; cursor: zoom-out; }
+    .lightbox.open { display: flex; }
+    .lightbox img  { max-width: 95vw; max-height: 95vh; border-radius: 8px; }
+
+    /* Footer */
+    footer { text-align: center; padding: 24px; font-size: 12px; color: var(--gray); }
+    footer a { color: var(--green); font-weight: 600; text-decoration: none; }
+
+    @media (max-width: 768px) {
+      .cards { grid-template-columns: repeat(2, 1fr); }
+      .env-bar, .filters { flex-direction: column; align-items: flex-start; }
+    }</style>
+</head>
+<body>
+
+<header class="header">
+  <h1>🎭 TTA Automation Report</h1>
+  <p>The Testing Academy · Playwright Framework</p>
+</header>
+
+<main class="container">
+
+  <!-- Summary cards -->
+  <div class="cards">
+    <div class="card">        <b>1</b><span>Total</span></div>
+    <div class="card pass">  <b>1</b><span>Passed</span></div>
+    <div class="card fail">  <b>0</b><span>Failed</span></div>
+    <div class="card skip">  <b>0</b><span>Skipped</span></div>
+    <div class="card rate">  <b>100.0%</b><span>Pass Rate</span></div>
+    <div class="card dur">   <b>7s</b><span>Duration</span></div>
+  </div>
+
+  <!-- Environment bar -->
+  <div class="env-bar">
+    <span><label>Environment</label><em class="badge-env">UAT</em></span>
+    <span><label>Browser</label><em>chromium</em></span>
+    <span><label>Platform</label><em>Windows</em></span>
+    <span><label>Workers</label><em>4</em></span>
+    <span><label>Run ID</label><em class="mono">20260507_053723</em></span>
+    <span><label>Started</label><em>07 May 2026, 05:37:23</em></span>
+  </div>
+
+  <!-- Filters -->
+  <div class="filters">
+    <span>Status:</span>
+    <label><input type="checkbox" class="sf" value="all" checked onchange="filter(this)"> All</label>
+    <label><input type="checkbox" class="sf" value="passed"  onchange="filter(this)"> ✅ Passed</label>
+    <label><input type="checkbox" class="sf" value="failed"  onchange="filter(this)"> ❌ Failed</label>
+    <label><input type="checkbox" class="sf" value="skipped" onchange="filter(this)"> ⏭ Skipped</label>
+  </div>
+
+  <!-- Test table -->
+  <div class="table-wrap">
+    <table>
+      <thead>
+        <tr>
+          <th>#</th><th>Suite</th><th>Test Name</th><th>Author</th>
+          <th>Tags</th><th>File</th><th>Start</th><th>End</th>
+          <th>Duration</th><th>Status</th><th>Screenshot</th><th>Video</th><th>Trace</th>
+        </tr>
+      </thead>
+      <tbody>
+        
+      <tr class="test-row pass" data-status="pass">
+        <td>1</td>
+        <td>Projects\Project5.spec.ts</td>
+        <td class="test-name" onclick="toggle('d-7a5ffd48fc7cd2637d36-8465ce74f6164d1fb226')">Verify the QA Profile Form Practice page</td>
+        <td>TTA-QA</td>
+        <td></td>
+        <td class="mono small" title="Project5.spec.ts:3">Project5.spec.ts:3</td>
+        <td class="small">07 May 2026, 05:37:26</td>
+        <td class="small">07 May 2026, 05:37:30</td>
+        <td class="center">4s</td>
+        <td class="center"><span class="badge pass">Passed</span></td>
+        <td class="center"><a href="screenshots/screenshot_1.png" class="art-link ss-link">📷 View</a></td>
+        <td class="center"><a href="videos/video_1.webm" target="_blank" class="art-link vid-link">▶ Play</a></td>
+        <td class="center"><a href="traces/trace_1.zip" download class="art-link trc-link">📁 Trace</a></td>
+      </tr>
+      
+      <tr id="d-7a5ffd48fc7cd2637d36-8465ce74f6164d1fb226" class="detail-row hidden">
+        <td colspan="13">
+          <div class="detail-box">
+            
+            <div class="console-section">
+              <div class="console-title">📋 Console Output (3 lines)</div>
+              <div class="console-body"><div class="console-line">All Navigation Command Printed : [</div><div class="console-line">  [32m&quot;Navigation commands — go forward, back, refresh, and load a URL.driver.navigate().to('https://thetestingacademy.com'); driver.navigate().refresh();&quot;[39m</div><div class="console-line">]</div></div>
+            </div>
+            
+            <video controls src="videos/video_1.webm" class="detail-video"></video>
+          </div>
+        </td>
+      </tr>
+      </tbody>
+    </table>
+  </div>
+
+</main>
+
+<!-- Screenshot lightbox -->
+<div id="lb" class="lightbox" onclick="this.classList.remove('open')">
+  <img id="lb-img" src="" alt="">
+</div>
+
+<footer>Built with ❤️ by <a href="https://thetestingacademy.com" target="_blank">Pramod Dutta</a></footer>
+
+<script>
+    // Toggle error detail row
+    function toggle(id) {
+      const el = document.getElementById(id);
+      if (el) el.classList.toggle('hidden');
+    }
+
+    // Status filter
+    function filter(cb) {
+      const allCb = document.querySelector('.sf[value="all"]');
+      if (cb.value === 'all') {
+        document.querySelectorAll('.sf:not([value="all"])').forEach(c => c.checked = false);
+      } else {
+        if (allCb) allCb.checked = false;
+        if (!document.querySelectorAll('.sf:not([value="all"]):checked').length && allCb)
+          allCb.checked = true;
+      }
+      const active = Array.from(document.querySelectorAll('.sf:not([value="all"]):checked')).map(c => c.value);
+      const showAll = document.querySelector('.sf[value="all"]')?.checked;
+      document.querySelectorAll('.test-row').forEach(row => {
+        row.style.display = (showAll || active.includes(row.dataset.status)) ? '' : 'none';
+      });
+    }
+
+    // Screenshot lightbox
+    document.addEventListener('DOMContentLoaded', () => {
+      const lb    = document.getElementById('lb');
+      const lbImg = document.getElementById('lb-img');
+      document.querySelectorAll('.ss-link').forEach(a => {
+        a.addEventListener('click', e => {
+          e.preventDefault();
+          lbImg.src = a.href;
+          lb.classList.add('open');
+        });
+      });
+      document.addEventListener('keydown', e => { if (e.key === 'Escape') lb.classList.remove('open'); });
+
+      // Auto-expand failed tests
+      document.querySelectorAll('.test-row.fail .test-name').forEach(cell => cell.click());
+    });</script>
+</body>
+</html>

@@ -13,7 +13,7 @@ export default defineConfig({
   reporter: [
     ["html"],
     ["allure-playwright"],
-    ["./reporters-dist/CustomTTAReporter.cjs"],
+    ["./reporters/CustomTTAReporter.ts"],
   ],
 
   use: {
