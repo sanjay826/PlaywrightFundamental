@@ -56,6 +56,54 @@ The HTTP referer header tells the server which page the user came FROM. When you
      if you have 50 tests that's 50 login operations saved. Massive time saver. 
 
 # 10. All
+- all() is used when we want to interact with multiple matching elements individually.
+  It converts a locator collection into an array of locators so we can iterate using loops.
+- all() does NOT auto-wait for elements to appear.
+
+# 11 allInnerTexts():
+  -  allInnerTexts() is a Playwright locator method that extracts the visible inner text from  all matched elements and returns them as an array of strings.
+
+  - allInnerTexts():
+            - returns array of strings
+            - does NOT return locators
+            - works only for text extraction
+
+
+# Quick Comparison
+ Method	        Return Type
+ all()	        Locator[]
+ allInnerTexts()	string[]
+ allTextContents()	string[]
+count()	           number
+
+# Waht is deffernce between all() & allInnerTexts() ?
+| Feature                | `all()`                       | `allInnerTexts()`                     |
+| ---------------------- | ----------------------------- | ------------------------------------- |
+| Return Type            | `Locator[]`                   | `string[]`                            |
+| Returns                | All matching element locators | Visible text of all matching elements |
+| Used For               | Interacting with elements     | Extracting text                       |
+| Can Click/Fill?        | ✅ Yes                         | ❌ No                                  |
+| Gives Actual Elements? | ✅ Yes                         | ❌ No                                  |
+| Mostly Used In         | Loops/actions                 | Validation/assertions   
+
+              |
+
+
+# innerText() Vs textContent()
+- innerText() : extracts plain text. eliminates whitespace and line breaks 
+- textContent(): Extracts text including hidden elements. Includes Extra whitespace
+  line break , etc 
+
+# allInnerTexts() Vs allTextContents()
+- allInnerTexts() - Return group of elements and extracts plain text. eliminates  
+  whitespace and line breaks
+- allTextContents() - Return group of elements and Extracts text including hidden 
+  elements. Includes Extra whitespace line break , etc 
+# all()
+-  Convert locator ---> locator[] -Returns of array of locators.
+-  Returns array of locators(Stores locators of products)/Converts locator to array of 
+   locators(for iteration)
+
 
 
 

@@ -1,0 +1,2 @@
+Asia checkbox was visible and clicked.
+Profile submitted successfully.
