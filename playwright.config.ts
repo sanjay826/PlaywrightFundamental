@@ -12,8 +12,8 @@ export default defineConfig({
 
   reporter: [
     ["html"],
-    ["allure-playwright"],
-    ["./reporters/CustomTTAReporter.ts"]
+    /* ["allure-playwright"],
+    ["./reporters/CustomTTAReporter.ts"] */
   ],
 
   use: {

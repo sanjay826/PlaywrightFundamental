@@ -101,8 +101,18 @@ count()	           number
   elements. Includes Extra whitespace line break , etc 
 # all()
 -  Convert locator ---> locator[] -Returns of array of locators.
--  Returns array of locators(Stores locators of products)/Converts locator to array of 
-   locators(for iteration)
+-  Returns array of locators(Stores locators of products)/Converts locator to 
+   array of locators(for iteration)
+
+
+
+
+# Iframe : 
+- An iframe (short for inline frame) is an HTML that allows you to embed 
+  another HMTL document within the current document.
+- Iframe are commonly used embed external control such as Video , map or 
+  other web page without affecting the parent document 
+
 
 
 
