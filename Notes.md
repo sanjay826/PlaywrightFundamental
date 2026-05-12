@@ -113,6 +113,45 @@ count()	           number
 - Iframe are commonly used embed external control such as Video , map or 
   other web page without affecting the parent document 
 
+# What is differnce between page.frame() and page.frameLocator()?
+page.frame() returns a Frame object and is useful for direct frame handling using name or URL.
+frameLocator() returns a FrameLocator object and is the recommended Playwright approach because it supports auto-waiting, locator chaining, and nested iframe handling more efficiently.
+
+- 1. page.frame() returns a Frame object.
+      - You use it when:
+                      - You already know the frame name/url
+                      - You want direct access to the frame
+                      - You perform multiple actions inside the frame
+  Syntax  :
+           const frame = page.frame({ name: 'frameName' });
+           const frame = page.frame({ url: /example/ });
+
+  Note : page.frame() gives actual Frame object.
+
+-  2. page.frameLocator() :
+      - rameLocator() is the recommended modern Playwright approach.
+      - It works like a locator chain:You use it when:
+                                - You want cleaner code
+                                - Auto-waiting is needed
+                                - Nested frames exist
+                                - You want stable locators
+      Syntax :
+      const frame = page.frameLocator('iframe');
+
+
+| Feature                | `page.frame()`      | `page.frameLocator()` |
+| ---------------------- | ------------------- | --------------------- |
+| Returns                | Frame object        | FrameLocator object   |
+| Modern approach        | Older               | Recommended           |
+| Auto waiting           | Less                | Better                |
+| Locator chaining       | No                  | Yes                   |
+| Nested frame support   | Manual              | Easy                  |
+| Best for               | Direct frame access | UI automation         |
+| Stable in dynamic apps | Less                | More                  |
+
+
+
+
 
 
 
