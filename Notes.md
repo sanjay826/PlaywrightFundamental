@@ -149,6 +149,37 @@ frameLocator() returns a FrameLocator object and is the recommended Playwright a
 | Best for               | Direct frame access | UI automation         |
 | Stable in dynamic apps | Less                | More                  |
 
+# Promise.all() :
+Promise.all() is a JavaScript method used to run multiple asynchronous operations at the same time and wait until all of them finish.
+# Why Promise.all() Was Introduced ?
+To execute independent async tasks in parallel instead of sequentially.
+This improves:
+     - Performance
+     - Speed
+     - Efficiency
+
+-> Starts all promises together
+-> Waits for all to complete
+-> Returns results in an array
+# Key Interview Point : Promise.all():
+ -> Runs async tasks concurrently
+ -> Improves performance
+ -> Waits for all promises
+ -> Fails immediately if one fails
+ -> Returns results in an array
+# Why use Promise.all in Playwright?
+Because Playwright events like 
+ -> popup
+ -> page
+ -> download
+ -> filechooser
+ must be listened to BEFORE the triggering action occurs.
+ Promise.all() ensures:
+ -> listener starts first
+ -> action happens simultaneously
+ -> event is not missedx
+ 
+
 
 
 
